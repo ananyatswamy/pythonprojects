@@ -70,9 +70,25 @@ def traceout(internet_server, target_server):
     # return connection_time + recursivecall()
     pass
 
+
 def display_server(internet_server):
-    # print all servers their connections and ip addresses
-    pass
+    # Iterate through each server
+    for server, details in internet_server.items():
+        ip_address = details[0] if details else "No IP address"  # IP address of the current server
+
+        # Print the server and its IP address in one line
+        print("Server: " + server + ", IP: " + ip_address)
+
+        # Find sub-servers (items that are not IP addresses)
+        sub_servers = [item for item in details[1:] if not item.replace(".", "").isdigit()]
+
+        # If there are sub-servers, list them with their IPs
+        if sub_servers:
+            for sub_server in sub_servers:
+                sub_server_ip = internet_server.get(sub_server, [None])[0]  # Get the sub-server IP
+                print("  Sub-Server: " + sub_server + ", IP: " + str(sub_server_ip))
+
+        print("-" * 40)  # Separator for readability
 
 def ip_config(internet_server):
      print(internet_server["current_server"])
@@ -110,9 +126,15 @@ def validate_ip(ip_address):
 
 
 if __name__ == "__main__":
-    internet_server = {"current_server": [],
-                       "anu": ["12.3.4.5"],
-                       "thippu": ["3.5.7.8"]}
+    internet_server = internet_server = {
+                                        'current_server': [],
+                                        'hema': ['9.9.9.9'],
+                                        'raj': ['8.8.8.8', 'tips', '5'],
+                                        'thippu': ['3.5.7.8'],
+                                        'tips': ['7.7.7.7', 'anu', '3', 'raj', '5'],
+                                        'anu': ['12.3.4.5', 'tips', '3']
+                                        }
+
     # this will have key as server name
     # values will be ip address, connection1, connection_time1, connection2...
     command = input(">>>").lower().split()
@@ -134,5 +156,7 @@ if __name__ == "__main__":
             server_or_ip = command[1]
             set_server(internet_server,server_or_ip)
             print(internet_server)
+        elif command[0] == "dis":
+            display_server(internet_server)
 
         command = input(">>>").lower().split()
