@@ -106,8 +106,9 @@ def ip_exists(internet_server, user_ip):
 
 def get_server_name(internet_server,user_ip):
     for server in internet_server.keys():
-        if internet_server[server] == user_ip:
-         return server
+        for sublist in  internet_server[server]:
+         if sublist == user_ip:
+             return server
 
 def validate_ip(ip_address):
     parts = ip_address.split('.')
@@ -134,7 +135,6 @@ if __name__ == "__main__":
                                         'tips': ['7.7.7.7', 'anu', '3', 'raj', '5'],
                                         'anu': ['12.3.4.5', 'tips', '3']
                                         }
-
     # this will have key as server name
     # values will be ip address, connection1, connection_time1, connection2...
     command = input(">>>").lower().split()
@@ -158,5 +158,11 @@ if __name__ == "__main__":
             print(internet_server)
         elif command[0] == "dis":
             display_server(internet_server)
+        elif command[0] == "ping" and len(command) == 2:
+            target_server = command[1]
+            ping(internet_server,target_server)
+        elif command[0] == "sn":
+            servername = get_server_name(internet_server,command[1])
+            print(servername)
 
         command = input(">>>").lower().split()
