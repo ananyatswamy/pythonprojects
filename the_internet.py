@@ -10,25 +10,39 @@ Description:
 
 def create_server(internet_server, user_server_name, user_ip):
     # see if ip is valid
-    validate_ip(user_ip)
-    # see if ip is existing in dictionary (internet_server,user_ip)
-    # if exists return error message
-    # elif server name exists overwrite ip
+    if not validate_ip(user_ip):# or ip_exists(internet_server,user_ip) :
+        print("invalid ip or existing ip")
+        return
+    #  update dictionary
+    elif server_exists(internet_server,user_server_name):
+        internet_server[user_server_name][0] = [user_ip]
     # else add to dictionary
+    else:
+        internet_server[user_server_name] = [user_ip]
 
+    print(internet_server)
 
 def create_connection(internet_server, server1, server2, connection_time):
     # if server 1 and server 2 exist in dictionary
-
     # if server1 or 2 not exists
-    # print ( to create connection both servers should exist in the server list)
+    if (server_exists(internet_server, server1) and server_exists(internet_server, server2)):
+        print("one or both of these servers do not exist")
+        return
 
     # if connection exists then return
-    # print ( connection exists )
+    for values in internet_server[server1]:
+        if values == server2:
+            print("already connected")
+            return
 
-    # if not connected add server name and connection time to both servers
-    # print ( connection exists )
-    pass
+    internet_server[server1].append(server2)
+    internet_server[server1].append(connection_time)
+
+    internet_server[server2].append(server1)
+    internet_server[server2].append(connection_time)
+
+    print("connection is created")
+
 def set_server(internet_server, name_or_ip):
     #if first digit is numerical then it is ip & is valid ip
         # ip_exist ( true )
@@ -62,19 +76,26 @@ def ip_config(internet_server):
 
 # helper functions..
 
-def server_exists(internet_server,server):
-    server_valid = False
+def server_exists(internet_server, user_server):
+    for server in internet_server.values():
+        if server == user_server:
+            return True
     # check the server name from the
     # if exists
     # server_valid = True
-    return server_valid
+    return False
 
 
 def ip_exists(internet_server,user_ip):
     # iterate the dictionary
     #print("Invalid IP address,already exists.")
     # return true or false
-    pass
+    for server in internet_server.values():
+        if server == "current_location":
+            pass
+        elif internet_server[server][0] == user_ip:
+            return True
+    return False
 
 def validate_ip(ip_address):
     parts = ip_address.split('.')
@@ -93,28 +114,23 @@ def validate_ip(ip_address):
 
 
 if __name__ == "__main__":
-    internet_server = {"current_server": None}
+    internet_server = {"current_server": None,
+                       "anu": ["12.3.4.5"],
+                       "thippu": ["3.5.7.8"]}
     # this will have key as server name
     # values will be ip address, connection1, connection_time1, connection2...
     command = input(">>>").lower().split()
-
     while command[0] != ("quit"):
         # parsing, command user input
-        if command[0] == "create-server" and len(command) == 3:
+        #if command[0] == "create-server" and len(command) == 3:
+        if command[0] == "cs" and len(command) == 3:
             name = command[1]
             ip_address = command[2]
             create_server(internet_server,name,ip_address)
-        elif command == "":
-            pass
-        elif command == "":
-            pass
-        elif command == "":
-            pass
-        elif command == "":
-            pass
-        elif command == "":
-            pass
-        elif command == "":
-            pass
-        elif command == "":
-            pass
+        elif  command[0] == ("conn") and len(command) == 4:
+            server1 = command[1]
+            server2 = command[2]
+            connection_time = command[3]
+            create_connection(internet_server, server1, server2, connection_time)
+            print(internet_server)
+        command = input(">>>").lower().split()
