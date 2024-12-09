@@ -10,7 +10,7 @@ Description:
 
 def create_server(internet_server, user_server_name, user_ip):
     # see if ip is valid
-    if not validate_ip(user_ip):# or ip_exists(internet_server,user_ip) :
+    if not validate_ip(user_ip) or ip_exists(internet_server,user_ip) :
         print("invalid ip or existing ip")
         return
     #  update dictionary
@@ -25,7 +25,7 @@ def create_server(internet_server, user_server_name, user_ip):
 def create_connection(internet_server, server1, server2, connection_time):
     # if server 1 and server 2 exist in dictionary
     # if server1 or 2 not exists
-    if (server_exists(internet_server, server1) and server_exists(internet_server, server2)):
+    if not (server_exists(internet_server, server1) and server_exists(internet_server, server2)):
         print("one or both of these servers do not exist")
         return
 
@@ -44,13 +44,15 @@ def create_connection(internet_server, server1, server2, connection_time):
     print("connection is created")
 
 def set_server(internet_server, name_or_ip):
-    #if first digit is numerical then it is ip & is valid ip
-        # ip_exist ( true )
-    #else see if server exist
-      # print not valid server name
-      # false ret
-    # set the server ip/server name
-    pass
+    if (name_or_ip[0].isdigit() and validate_ip(name_or_ip)):
+        if not (ip_exists(internet_server,name_or_ip)):
+            print("IP doesnot exist")
+        else:
+            internet_server["current_server"]=get_server_name(internet_server,name_or_ip)
+    elif(server_exists(internet_server,name_or_ip)):
+        internet_server["current_server"] = name_or_ip
+    else:
+        print("server doesnot exist")
 
 def ping(internet_server, target_server):
     # identify if it is ip or name
@@ -59,6 +61,7 @@ def ping(internet_server, target_server):
     # from current server identify if there is connection to target server
     # return connection_time + recursivecall()
     pass
+
 def traceout(internet_server, target_server):
     # identify if it is ip or name
     # identify if it exists
@@ -70,32 +73,25 @@ def traceout(internet_server, target_server):
 def display_server(internet_server):
     # print all servers their connections and ip addresses
     pass
-def ip_config(internet_server):
-     # print() current location
-    pass
 
-# helper functions..
+def ip_config(internet_server):
+     print(internet_server["current_server"])
+
 
 def server_exists(internet_server, user_server):
-    for server in internet_server.values():
-        if server == user_server:
-            return True
-    # check the server name from the
-    # if exists
-    # server_valid = True
-    return False
+    return user_server in internet_server
 
 
-def ip_exists(internet_server,user_ip):
-    # iterate the dictionary
-    #print("Invalid IP address,already exists.")
-    # return true or false
+def ip_exists(internet_server, user_ip):
     for server in internet_server.values():
-        if server == "current_location":
-            pass
-        elif internet_server[server][0] == user_ip:
+        if server and server[0] == user_ip:
             return True
     return False
+
+def get_server_name(internet_server,user_ip):
+    for server in internet_server.keys():
+        if internet_server[server] == user_ip:
+         return server
 
 def validate_ip(ip_address):
     parts = ip_address.split('.')
@@ -114,7 +110,7 @@ def validate_ip(ip_address):
 
 
 if __name__ == "__main__":
-    internet_server = {"current_server": None,
+    internet_server = {"current_server": [],
                        "anu": ["12.3.4.5"],
                        "thippu": ["3.5.7.8"]}
     # this will have key as server name
@@ -132,5 +128,11 @@ if __name__ == "__main__":
             server2 = command[2]
             connection_time = command[3]
             create_connection(internet_server, server1, server2, connection_time)
+        elif command[0] == "ip":
+             ip_config(internet_server)
+        elif command[0] == "ss" and len(command) == 2:
+            server_or_ip = command[1]
+            set_server(internet_server,server_or_ip)
             print(internet_server)
+
         command = input(">>>").lower().split()
