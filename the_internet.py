@@ -108,9 +108,7 @@ def traceout(internet_server, target_server):
     elif not server_exists(internet_server, target_server):
         print("Error: Server "+target_server+" does not exist in the network.")
         return
-    # identify if it is ip or name
-    # identify if it exists
-    # find name if it is ip
+
     # from current server identify if there is connection to target server
     # return connection_time + recursivecall()
     pass
@@ -217,5 +215,8 @@ if __name__ == "__main__":
         elif command[0] == "ping" and len(command) == 2:
             target_server = command[1]
             ping(internet_server,target_server)
+        elif command[0] == "trace" and len(command) == 2:
+            target_server = command[1]
+            traceout(internet_server,target_server)
 
         command = input(">>>").lower().split()
