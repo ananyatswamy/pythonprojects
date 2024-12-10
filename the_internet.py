@@ -91,7 +91,8 @@ def display_server(internet_server):
         print("-" * 40)  # Separator for readability
 
 def ip_config(internet_server):
-     print(internet_server["current_server"])
+    if(is_base_server_set(internet_server)):
+     print(internet_server["current_server"]+"  "+get_ip_address(internet_server,internet_server["current_server"]))
 
 
 def server_exists(internet_server, user_server):
@@ -104,11 +105,21 @@ def ip_exists(internet_server, user_ip):
             return True
     return False
 
+def get_ip_address(internet_server,user_server):
+    if user_server in internet_server:
+        return internet_server[user_server][0]
+
 def get_server_name(internet_server,user_ip):
     for server in internet_server.keys():
         for sublist in  internet_server[server]:
          if sublist == user_ip:
              return server
+def is_base_server_set(internet_server):
+    if internet_server['current_server']:
+        return True
+    else:
+        print("Base server not set")
+        return False
 
 def validate_ip(ip_address):
     parts = ip_address.split('.')
