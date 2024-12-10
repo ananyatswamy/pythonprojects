@@ -54,12 +54,69 @@ def set_server(internet_server, name_or_ip):
     else:
         print("server doesnot exist")
 
-def ping(internet_server, target_server):
+"""def ping(internet_server, target_ip_server):
+    if not (is_base_server_set(internet_server)):
+        return
+    if (name_or_ip[0].isdigit() and validate_ip(target_ip_server)):
+        if not (ip_exists(internet_server, target_ip_server)):
+            print("IP doesnot exist")
+        elif
+
     # identify if it is ip or name
     # identify if it exists
     # find name if it is ip
+        visited={}
+        for server in internet_server:
+            visited[server] = False
+        server_reachable(internet_server, starting_server, target_server, visited)
     # from current server identify if there is connection to target server
     # return connection_time + recursivecall()
+    pass"""
+
+def ping(internet_server, target_server):
+    # Validate input and identify the target server by name
+    if target_server[0].isdigit() and validate_ip(target_server):
+        if not ip_exists(internet_server, target_server):
+            print(f"Error: IP {target_server} does not exist in the network.")
+            return
+        target_server = get_server_name(internet_server, target_server)
+    elif not server_exists(internet_server, target_server):
+        print(f"Error: Server {target_server} does not exist in the network.")
+        return
+
+    # Get the current server
+    current_server = internet_server.get("current_server")
+    if not current_server:
+        print("Error: No server is currently selected. Use 'set-server' to select a server.")
+        return
+
+    # Recursive helper function to find a path and calculate the total connection time
+    def ping_rec(start, target, visited):
+        if start == target:
+            return 0  # Reached the target, no additional time needed
+        visited[start] = True
+        connections = internet_server[start][1:]  # Skip the IP address
+        for i in range(0, len(connections), 2):  # Process connections in pairs (server, time)
+            neighbor, time = connections[i], int(connections[i + 1])
+            if not visited[neighbor]:
+                result = ping_rec(neighbor, target, visited)
+                if result != -1:  # Path found
+                    return time + result
+        visited[start] = False
+        return -1  # Path not found
+
+    # Initialize visited dictionary and start the recursive search
+    visited = {server: False for server in internet_server.keys() if server != "current_server"}
+    total_time = ping_rec(current_server, target_server, visited)
+
+    # Output the result
+    if total_time == -1:
+        print(f"Error: No route found from {current_server} to {target_server}.")
+    else:
+        print(f"Ping successful! Time taken: {total_time} ms.")
+
+
+def server_reachable(internet_server,starting_server,target_server,visited):
     pass
 
 def traceout(internet_server, target_server):
