@@ -97,6 +97,17 @@ def ping(internet_server, target_server):
 
 
 def traceout(internet_server, target_server):
+    if not (is_base_server_set(internet_server)):
+        return
+    # Validate input and identify the target server by name
+    if target_server[0].isdigit() and validate_ip(target_server):
+        if not ip_exists(internet_server, target_server):
+            print("Error: IP "+target_server+" does not exist in the network.")
+            return
+        target_server = get_server_name(internet_server, target_server)
+    elif not server_exists(internet_server, target_server):
+        print("Error: Server "+target_server+" does not exist in the network.")
+        return
     # identify if it is ip or name
     # identify if it exists
     # find name if it is ip
