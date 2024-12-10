@@ -172,8 +172,5 @@ if __name__ == "__main__":
         elif command[0] == "ping" and len(command) == 2:
             target_server = command[1]
             ping(internet_server,target_server)
-        elif command[0] == "sn":
-            servername = get_server_name(internet_server,command[1])
-            print(servername)
 
         command = input(">>>").lower().split()
