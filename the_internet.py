@@ -59,23 +59,43 @@ def set_server(internet_server, name_or_ip):
 
 #######################################################################
 
-def ping_rec(internet_server, start, target, visited):
-    if start == target:
+def ping_recursive(internet_server, start_server, target_server, visited):
+    if start_server == target_server:
         return 0  # Reached the target, no additional time needed
 
-    visited[start] = True
-    connections = internet_server[start][1:]  # Skip the IP address
+    visited[start_server] = True
+    connections = internet_server[start_server][1:]  # Skip the IP address
 
     # Process connections in pairs (server, time)
     for i in range(0, len(connections), 2):
         neighbor, time = connections[i], int(connections[i + 1])
         if not visited[neighbor]:
-            result = ping_rec(internet_server, neighbor, target, visited)
+            result = ping_recursive(internet_server, neighbor, target_server, visited)
             if result != -1:  # Path found
                 return time + result
 
-    visited[start] = False
+    visited[start_server] = False
     return -1  # Path not found
+
+def spider_web_rec(web_map, starting_place, destination, visited)
+    path = []  # set the path to empty at first, this will contain the path from the current place that we start to the end.
+
+    if starting_place == destination:  # if we've reached the end, then begin constructing the path from the back.
+        return [destination]
+    # setting the visited to true so we don't loop back.
+    visited[starting_place] = True
+
+    for next_place in web_map[starting_place]:
+        if not visited[next_place]:
+            path = spider_web_rec(web_map, next_place, destination, visited)
+            if path:
+                return [starting_place] + path
+
+    visited[starting_place] = False
+    # essentially this will return if no path is found, i.e. we still have  path = []
+    return path
+
+
 
 #########################################################################
 
@@ -97,17 +117,22 @@ def ping(internet_server, target_server):
         return
 
     # Get the current server
-    current_server = internet_server.get("current_server")
+    start_server = internet_server.get("current_server")
 
     # Initialize visited dictionary
-    visited = {server: False for server in internet_server.keys() if server != "current_server"}
+    #visited = {server: False for server in internet_server.keys() if server != "current_server"}
+
+    visited = {}
+    for server in internet_server:
+        if server != "current_server":
+            visited[server] = False
 
     # Call the recursive ping function to find the total connection time
-    total_time = ping_rec(internet_server, current_server, target_server, visited)
+    total_time = ping_recursive(internet_server, start_server, target_server, visited)
 
     # Output the result
     if total_time == -1:
-        print("Error: No route found from " + current_server + " to " + target_server + ".")
+        print("Error: No route found from " + start_server + " to " + target_server + ".")
     else:
         print("Ping successful! Time taken: " + str(total_time) + " ms.")
 
