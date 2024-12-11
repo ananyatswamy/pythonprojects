@@ -222,7 +222,7 @@ def validate_ip(ip_address):
 
 if __name__ == "__main__":
     internet_server = internet_server = {
-                                        'current_server': ['raj'],
+                                        'current_server': [],
                                         'hema': ['9.9.9.9'],
                                         'raj': ['8.8.8.8', 'tips', '5'],
                                         'thippu': ['3.5.7.8'],
@@ -266,4 +266,5 @@ if __name__ == "__main__":
             traceout(internet_server,target_server)
 
         command = input(">>>").lower().split()
+
 ##################################################################################
