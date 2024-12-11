@@ -77,26 +77,6 @@ def ping_recursive(internet_server, start_server, target_server, visited):
     visited[start_server] = False
     return -1  # Path not found
 
-def spider_web_rec(web_map, starting_place, destination, visited)
-    path = []  # set the path to empty at first, this will contain the path from the current place that we start to the end.
-
-    if starting_place == destination:  # if we've reached the end, then begin constructing the path from the back.
-        return [destination]
-    # setting the visited to true so we don't loop back.
-    visited[starting_place] = True
-
-    for next_place in web_map[starting_place]:
-        if not visited[next_place]:
-            path = spider_web_rec(web_map, next_place, destination, visited)
-            if path:
-                return [starting_place] + path
-
-    visited[starting_place] = False
-    # essentially this will return if no path is found, i.e. we still have  path = []
-    return path
-
-
-
 #########################################################################
 
 def ping(internet_server, target_server):
