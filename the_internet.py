@@ -35,7 +35,7 @@ def create_connection(internet_server, server1, server2, connection_time):
     # if connection exists then return
     for values in internet_server[server1]:
         if values == server2:
-            print("already these two connected")
+            print("already connected")
             return
 
     internet_server[server1].append(server2)
@@ -64,20 +64,13 @@ def ping_recursive(internet_server, start_server, target_server, visited):
         return 0  # Reached the target, no additional time needed
 
     visited[start_server] = True
-    #connections = internet_server[start_server][1:]  # Skip the IP address
-    connections = internet_server[start_server]  # Skip the IP address
+    connections = internet_server[start_server][1:]  # Skip the IP address
 
     # Process connections in pairs (server, time)
-    #for i in range(0, len(connections), 2):
-    for conn in connections:
-        if conn[0].isdigit():
-            pass
-        else:
-            time = time + 1
-        #neighbor, time = connections[i], int(connections[i + 1])
-
-        if not visited[conn]:
-            result = ping_recursive(internet_server,conn, target_server, visited)
+    for i in range(0, len(connections), 2):
+        neighbor, time = connections[i], int(connections[i + 1])
+        if not visited[neighbor]:
+            result = ping_recursive(internet_server, neighbor, target_server, visited)
             if result != -1:  # Path found
                 return time + result
 
@@ -116,7 +109,6 @@ def ping(internet_server, target_server):
 
     # Call the recursive ping function to find the total connection time
     total_time = ping_recursive(internet_server, start_server, target_server, visited)
-
 
     # Output the result
     if total_time == -1:
