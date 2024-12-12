@@ -1,13 +1,11 @@
-
 """
-File:
+File: the_internet.py
 Aut Ananya Thippeswamy
-Date:
+Date: 12/11/2024
 Section: 23
 E-mail: ho20134@umbc.edu
-Description:
+Description: the internet recursive server connection finding
 """
-#####################################################################
 
 def create_server(internet_server, user_server_name, user_ip):
     # see if ip is valid
@@ -23,7 +21,6 @@ def create_server(internet_server, user_server_name, user_ip):
 
     print(internet_server)
 
-####################################################################
 
 def create_connection(internet_server, server1, server2, connection_time):
     # if server 1 and server 2 exist in dictionary
@@ -35,7 +32,7 @@ def create_connection(internet_server, server1, server2, connection_time):
     # if connection exists then return
     for values in internet_server[server1]:
         if values == server2:
-            print("already servers connected")
+            print("already connected")
             return
 
     internet_server[server1].append(server2)
@@ -46,7 +43,6 @@ def create_connection(internet_server, server1, server2, connection_time):
 
     print("connection is created")
 
-####################################################################
 
 def set_server(internet_server, name_or_ip):
     if (name_or_ip[0].isdigit() and validate_ip(name_or_ip)):
@@ -57,29 +53,27 @@ def set_server(internet_server, name_or_ip):
     elif(server_exists(internet_server,name_or_ip)):
         internet_server["current_server"] = name_or_ip
     else:
-        print("server not exist")
+        print("server doesnot exist")
 
-#######################################################################
 
-def ping_recursive(internet_server, start_server, target_server, visited):
+def recursive(internet_server, start_server, target_server, visited):
     if start_server == target_server:
-        return 0  # target server reached
+        return 0  # Reached the target, no additional time needed
 
     visited[start_server] = True
-    connections = internet_server[start_server][1:]  # exclude IP column
+    connections = internet_server[start_server][1:]  # Skip the IP address
 
-    # connections both server and time
+    # Process connections in pairs (server, time)
     for i in range(0, len(connections), 2):
-        neighbor_server, time = connections[i], int(connections[i + 1])
-        if not visited[neighbor_server]:
-            result = ping_recursive(internet_server, neighbor_server, target_server, visited)
-            if result != -1:  # path yes
+        neighbor, time = connections[i], int(connections[i + 1])
+        if not visited[neighbor]:
+            result = recursive(internet_server, neighbor, target_server, visited)
+            if result != -1:  # Path found
                 return time + result
 
     visited[start_server] = False
-    return -1  # no path
+    return -1  # Path not found
 
-#########################################################################
 
 def ping(internet_server, target_server):
     # is base server set
@@ -98,31 +92,31 @@ def ping(internet_server, target_server):
         print("Error: Server " + target_server + " does not exist in the network.")
         return
 
+    # Get the current server
     start_server = internet_server.get("current_server")
 
-    # server visited False
+    # Initialize visited dictionary
+    #visited = {server: False for server in internet_server.keys() if server != "current_server"}
+
     visited = {}
     for server in internet_server:
         if server != "current_server":
             visited[server] = False
 
     # Call the recursive ping function to find the total connection time
-    total_time = ping_recursive(internet_server, start_server, target_server, visited)
+    total_time = recursive(internet_server, start_server, target_server, visited)
 
-    # time print
+    # Output the result
     if total_time == -1:
-        print("No route found from " + start_server + " to " + target_server + ".")
+        print("Error: No route found from " + start_server + " to " + target_server + ".")
     else:
         print("Ping successful! Time taken: " + str(total_time) + " ms.")
-
-
-#############################################################################
 
 
 def traceout(internet_server, target_server):
     if not (is_base_server_set(internet_server)):
         return
-    # validate input and find the target server by name
+    # Validate input and identify the target server by name
     if target_server[0].isdigit() and validate_ip(target_server):
         if not ip_exists(internet_server, target_server):
             print("Error: IP "+target_server+" does not exist in the network.")
@@ -132,127 +126,57 @@ def traceout(internet_server, target_server):
         print("Error: Server "+target_server+" does not exist in the network.")
         return
 
-    start_server = internet_server.get("current_server")
-
-    # server visited False
-    visited = {}
-    for server in internet_server:
-        if server != "current_server":
-            visited[server] = False
-
-    # Call the recursive ping function to find the total connection time
-    path = common_recursive(internet_server, start_server, target_server, visited)
-
-    print( path)
-
     # from current server identify if there is connection to target server
     # return connection_time + recursivecall()
+    current_server = internet_server.get("current_server")
+    visited = {}
+    count = -2
+    for server in internet_server:
+        count += 1
+        if server != "current_server":
+            visited[server] = False
+            print(f"{count}\t{internet_server[server][0]}\t{server}")
 
+    # Recursive ping to find the path
+    path_time = recursive(internet_server, current_server, target_server, visited)
 
+    if path_time == -1:
+        print(f"No route found from {current_server} to {target_server}")
+    else:
+        print(f"Trace successful! Total time: {path_time} ms.")
 
-###############################################################################
-
-def common_recursive(internet_server, start_server, target_server, visited):
-    if start_server == target_server:
-        return 0  # target server reached
-
-    visited[start_server] = True
-    connections = internet_server[start_server][1:]  # exclude IP column
-
-    # connections both server and time
-    for i in range(0, len(connections), 2):
-        neighbor_server, time = connections[i], int(connections[i + 1])
-        if not visited[neighbor_server]:
-            result = ping_recursive(internet_server, neighbor_server, target_server, visited)
-            if result != -1:  # path yes
-                return time + result
-
-    visited[start_server] = False
-    return -1  # no path
-###############################################################################
-
-"""def traceout_recursive(internet_server, start_server, target_server, visited):
-
-    #    This is the function that does the majority of the work here. The web_map is a dictionary of lists which
-    #        has the nodes plus the
-
-    #:param web_map:
-    #:param starting_place: the name of the starting node
-    #:param destination: the name of the destination node
-    #:param visited: the visited dictionary, initially set to false but we'll set each node to true
-    #:return: the path if it exists, the path is a list of the nodes
-
-    path = []  # set the path to empty at first, this will contain the path from the current place that we start to the end.
-
-
-    if start_server == target_server:  # if we've reached the end, then begin constructing the path from the back.
-        return [target_server]
-    # setting the visited to true so we don't loop back.
-    visited[start_server] = True
-
-    if path:
-    return [start_server] + path +[target_server]
-
-"""
-
-"""        #here we need to loop through all of the places connected to the current node (which we consider the starting node)
-       #     we use a for loop to scan through all of the possible destinations
-      #  Then check if they're visited first before going.  You could also check once you get there which we do at the
-     #       top of the function, just for safety.
-    #    Finally we get the returned path, which is whatever the path is up to our current starting node.  If the path
-        #    exists then that means that we've found a way to go.  If the path doesn't exist that means it was a dead
-       #     end and we have to keep searching.
-      #  Thus, we check if path, meaning if it's not empty, or a dead end.  If it's not we return it.
-     #       Remember that returning the path here exits the for loop and the function. Technically we could
-    #        search for other paths, but as soon as we find the first path we exit.
-
-    for next_place in internet_server[start_server]:
-        if not visited[next_place]:
-            path = traceout_recursive(internet_server, next_place, target_server, visited)
-            if path:
-                return [start_server] + path
-
-    visited[start_server] = False
-    # esentially this will return if no path is found, i.e. we still have  path = []
-    return path
-    """
-
-
-############################################################
 
 def display_server(internet_server):
     # Iterate through each server
     for server, details in internet_server.items():
-        if not (server == 'current_server'):
-            ip_address = details[0] if details else "No IP address"  # IP address of the current server
+        ip_address = details[0] if details else "No IP address"  # IP address of the current server
 
-        # print the server and IP address
-            print("Server: " + server + ", IP: " + ip_address)
+        # Print the server and its IP address in one line
+        print("Server: " + server + ", IP: " + ip_address)
 
-        # sub-servers items that are not IP addresses
-            sub_servers = [item for item in details[1:] if not item.replace(".", "").isdigit()]
+        # Find sub-servers (items that are not IP addresses)
+        sub_servers = []
+        for item in details[1:]:
+            if not item.replace(".", "").isdigit():
+                sub_servers.append(item)
 
-        # list sub-servers and ip
-            if sub_servers:
-                for sub_server in sub_servers:
-                    sub_server_ip = internet_server.get(sub_server, [None])[0]  # Get the sub-server IP
-                    print("  Sub-Server: " + sub_server + ", IP: " + str(sub_server_ip))
+        # If there are sub-servers, list them with their IPs
+        if sub_servers:
+            for sub_server in sub_servers:
+                sub_server_ip = internet_server.get(sub_server, [None])[0]  # Get the sub-server IP
+                print("  Sub-Server: " + sub_server + ", IP: " + str(sub_server_ip))
 
-            print("-" * 40)
+        print("-" * 40)  # Separator for readability
 
-
-################################################################
 
 def ip_config(internet_server):
     if(is_base_server_set(internet_server)):
      print(internet_server["current_server"]+"  "+get_ip_address(internet_server,internet_server["current_server"]))
 
-################################################################
 
 def server_exists(internet_server, user_server):
     return user_server in internet_server
 
-################################################################
 
 def ip_exists(internet_server, user_ip):
     for server in internet_server.values():
@@ -260,13 +184,11 @@ def ip_exists(internet_server, user_ip):
             return True
     return False
 
-###################################################################
 
 def get_ip_address(internet_server,user_server):
     if user_server in internet_server:
         return internet_server[user_server][0]
 
-###################################################################
 
 def get_server_name(internet_server,user_ip):
     for server in internet_server.keys():
@@ -274,22 +196,20 @@ def get_server_name(internet_server,user_ip):
          if sublist == user_ip:
              return server
 
-###################################################################
 
 def is_base_server_set(internet_server):
     if internet_server['current_server']:
         return True
     else:
-        print("Base Server not set")
+        print("Base server not set")
         return False
-###################################################################
+
 
 def validate_ip(ip_address):
     parts = ip_address.split('.')
     is_valid = False
     if len(parts) == 4:
         for part in parts:
-            #if not part.isdigit() or not (-1 < int(part) < 255):
             if not part.isdigit() or not (0 < int(part) < 255):
                 print("Invalid IP address.")
                 return is_valid
@@ -299,61 +219,36 @@ def validate_ip(ip_address):
         return is_valid
     return is_valid
 
-###################################################################
 
 if __name__ == "__main__":
-    internet_server = internet_server = {
-                                        'current_server': [],
-                                        'hema': ['9.9.9.9'],
-                                        'raj': ['8.8.8.8', 'tips', '5'],
-                                        'thippu': ['3.5.7.8'],
-                                        'tips': ['7.7.7.7', 'anu', '3', 'raj', '5'],
-                                        'anu': ['12.3.4.5', 'tips', '3']
-                                        }
+    internet_server = internet_server = {'current_server': []}
     # this will have key as server name
     # values will be ip address, connection1, connection_time1, connection2...
-    internet_server1 = internet_server1 = {
-        'current_server': ['anu'],
-        'hema': ['9.9.9.9'],
-        'raj': ['8.8.8.8'],
-        'thippu': ['3.5.7.8'],
-        'tips': ['7.7.7.7'],
-        'anu': ['12.3.4.5']
-    }
     command = input(">>>").lower().split()
     while command[0] != ("quit"):
         # check command and call methods
-        #if command[0] == "create-server" and len(command) == 3:
-        if command[0] == "cs" and len(command) == 3:
+        if command[0] == "create-server" and len(command) == 3:
             name = command[1]
             ip_address = command[2]
             create_server(internet_server,name,ip_address)
-        #elif  command[0] == ("conn") and len(command) == 4:
         elif  command[0] == ("conn") and len(command) == 4:
             server1 = command[1]
             server2 = command[2]
             connection_time = command[3]
             create_connection(internet_server, server1, server2, connection_time)
-        #elif command[0] == "ip-config":
-        elif command[0] == "ip":
+        elif command[0] == "ip-config":
              ip_config(internet_server)
-        #elif command[0] == "set-server" and len(command) == 2:
-        elif command[0] == "ss" and len(command) == 2:
+        elif command[0] == "set-server" and len(command) == 2:
             server_or_ip = command[1]
             set_server(internet_server,server_or_ip)
             print(internet_server)
-        #elif command[0] == "display-servers":
-        elif command[0] == "dis":
+        elif command[0] == "display-servers":
             display_server(internet_server)
-        #elif command[0] == "ping" and len(command) == 2:
         elif command[0] == "ping" and len(command) == 2:
             target_server = command[1]
             ping(internet_server,target_server)
-        #elif command[0] == "traceout" and len(command) == 2:
-        elif command[0] == "trace" and len(command) == 2:
+        elif command[0] == "traceout" and len(command) == 2:
             target_server = command[1]
             traceout(internet_server,target_server)
 
         command = input(">>>").lower().split()
-
-##################################################################################
