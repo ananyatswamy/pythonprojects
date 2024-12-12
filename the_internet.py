@@ -111,7 +111,7 @@ def ping(internet_server, target_server):
 
     # time print
     if total_time == -1:
-        print("Error: No route found from " + start_server + " to " + target_server + ".")
+        print("No route found from " + start_server + " to " + target_server + ".")
     else:
         print("Ping successful! Time taken: " + str(total_time) + " ms.")
 
