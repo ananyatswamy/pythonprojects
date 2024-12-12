@@ -149,24 +149,20 @@ def traceout(internet_server, target_server):
 def display_server(internet_server):
     # Iterate through each server
     for server, details in internet_server.items():
-        ip_address = details[0] if details else "No IP address"  # IP address of the current server
+        if not (server == 'current_server'):
+            ip_address = details[0] if details else "No IP address"  # IP address of the current server
 
-        # Print the server and its IP address in one line
-        print("Server: " + server + ", IP: " + ip_address)
+        # print the server and IP address
+            print("Server: " + server + ", IP: " + ip_address)
 
-        # Find sub-servers (items that are not IP addresses)
-        sub_servers = []
-        for item in details[1:]:
-            if not item.replace(".", "").isdigit():
-                sub_servers.append(item)
+        # sub-servers items that are not IP addresses
+            sub_servers = [item for item in details[1:] if not item.replace(".", "").isdigit()]
 
-        # If there are sub-servers, list them with their IPs
-        if sub_servers:
-            for sub_server in sub_servers:
-                sub_server_ip = internet_server.get(sub_server, [None])[0]  # Get the sub-server IP
-                print("  Sub-Server: " + sub_server + ", IP: " + str(sub_server_ip))
-
-        print("-" * 40)  # Separator for readability
+        # list sub-servers and ip
+            if sub_servers:
+                for sub_server in sub_servers:
+                    sub_server_ip = internet_server.get(sub_server, [None])[0]  # Get the sub-server IP
+                    print("  Sub-Server: " + sub_server + ", IP: " + str(sub_server_ip))
 
 
 def ip_config(internet_server):
